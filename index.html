@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>微信语言小练习 | Chinese 301</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem;
+        background: linear-gradient(to right, #cce5ff, #e6ccff);
+        color: #333;
+        max-width: 900px;
+        margin: auto;
+      }
+      h2 {
+        color: #4b0082;
+      }
+      .question-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+      .button-group button {
+        margin: 0.3rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        background-color: #4b0082;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .button-group button:hover {
+        background-color: #5d3fd3;
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+        margin-top: 1rem;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">加载中...</div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      const questions = [
+        {
+          question: "微信朋友圈的互动是完全公开的吗？",
+          type: "truefalse",
+          options: ["是", "否"],
+          answer: "否",
+          explanation: "微信朋友圈采用“半封闭”模式，评论和点赞仅对共同好友可见。例如你评论了好友A的照片，除非另一个好友B也与A互为好友，否则TA无法看到你的评论。"
+        },
+        {
+          question: "以下哪项不是微信代购广告的常用语言风格？",
+          type: "choice",
+          options: [
+            "提出问题后引出产品",
+            "明星代言增强可信度",
+            "使用长篇学术语言",
+            "现身说法增强亲切感"
+          ],
+          answer: "使用长篇学术语言",
+          explanation: "微信代购广告强调生活化、亲和力，而非学术性。例如：‘我家宝贝一直用这款奶粉，放心又健康。’ 长篇学术语言则会削弱亲近感和信任度。"
+        },
+        {
+          question: "简要说明微商广告如何通过构建用户形象增强说服力？",
+          type: "short",
+          explanation: "微商广告常通过‘您关爱家人’‘您追求品质生活’等语言，将目标用户塑造成有责任感、有爱心的人，从而激发购买动机。例如：‘宝宝每天都用它，作为妈妈，我当然只选最安心的。’"
+        },
+        {
+          question: "仿照微信广告语言，写一句推销你喜欢的产品的文案。",
+          type: "short",
+          explanation: "请体现反问句（如‘你还在用旧牙刷吗？’）、亲切称呼（‘亲们’）、轻松语气（‘好用到爆’）、或现身说法（‘我自己一直在用’）的广告语言特征。"
+        },
+        {
+          question: "哪一句更符合微信广告中的“投射”叙事模式？",
+          type: "choice",
+          options: [
+            "今天用了这款护手霜，真不错。",
+            "冬天手干裂严重？快试试这款护手霜吧！"
+          ],
+          answer: "冬天手干裂严重？快试试这款护手霜吧！",
+          explanation: "‘投射’模式是关于未来的建议或行动计划，常见于广告鼓励购买的语言结构，如‘这个夏天，你准备好美白了吗？’"
+        }
+      ];
+
+      function App() {
+        const [step, setStep] = useState(0);
+        const [answers, setAnswers] = useState([]);
+        const [showResult, setShowResult] = useState(false);
+        const [textInput, setTextInput] = useState("");
+
+        const current = questions[step];
+
+        function handleAnswer(response) {
+          const newAnswers = [...answers];
+          newAnswers[step] = response;
+          setAnswers(newAnswers);
+          setTextInput("");
+          if (step + 1 === questions.length) {
+            setShowResult(true);
+          } else {
+            setStep(step + 1);
+          }
+        }
+
+        function handleRestart() {
+          setAnswers([]);
+          setStep(0);
+          setShowResult(false);
+          setTextInput("");
+        }
+
+        return (
+          <div>
+            <h2>📱 微信语言小练习</h2>
+            {showResult ? (
+              <div>
+                <h3>🎉 练习总结</h3>
+                {questions.map((q, index) => (
+                  <div className="question-card" key={index}>
+                    <p><strong>{index + 1}. {q.question}</strong></p>
+                    <p>你的答案：{answers[index] || "未作答"}</p>
+                    {q.answer && <p>参考答案：{q.answer}</p>}
+                    <p><strong>解析：</strong>{q.explanation}</p>
+                  </div>
+                ))}
+                <button onClick={handleRestart}>重新开始</button>
+              </div>
+            ) : (
+              <div className="question-card">
+                <p><strong>题目 {step + 1} / {questions.length}</strong></p>
+                <p>{current.question}</p>
+                {current.type === "truefalse" || current.type === "choice" ? (
+                  <div className="button-group">
+                    {current.options.map((opt, i) => (
+                      <button key={i} onClick={() => handleAnswer(opt)}>{opt}</button>
+                    ))}
+                  </div>
+                ) : (
+                  <div>
+                    <textarea
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      placeholder="请输入答案..."
+                    ></textarea>
+                    <div className="button-group">
+                      <button onClick={() => handleAnswer(textInput)}>提交</button>
+                    </div>
+                  </div>
+                )}
+                <div className="button-group">
+                  {step > 0 && <button onClick={() => setStep(step - 1)}>上一题</button>}
+                  <button onClick={handleRestart}>重做</button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
